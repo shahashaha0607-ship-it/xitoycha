@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSK 1 So'z Yodlash</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 420px;
+    margin: auto;
+    padding: 20px;
+}
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.hanzi {
+    font-size: 48px;
+    font-weight: bold;
+}
+.pinyin {
+    font-size: 20px;
+    color: #555;
+    margin: 10px 0;
+}
+.meaning {
+    font-size: 18px;
+    margin-top: 15px;
+    display: none;
+}
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+button {
+    flex: 1;
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    background: #4CAF50;
+    color: white;
+}
+button:active {
+    background: #388E3C;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+    <div class="card">
+        <div class="hanzi" id="hanzi"></div>
+        <div class="pinyin" id="pinyin"></div>
+        <div class="meaning" id="meaning"></div>
+    </div>
+
+    <div class="buttons">
+        <button onclick="prevWord()">⬅</button>
+        <button onclick="toggleMeaning()">👁</button>
+        <button onclick="nextWord()">➡</button>
+    </div>
+    <div class="buttons">
+        <button onclick="randomWord()">🔀 Tasodifiy</button>
+    </div>
+</div>
+
+<script>
+const words = [
+{h:"爱",p:"ài",m:"sevmoq, muhabbat"},
+{h:"八",p:"bā",m:"sakkiz"},
+{h:"爸爸",p:"bàba",m:"dada"},
+{h:"杯子",p:"bēizi",m:"stakan, krujka"},
+{h:"北京",p:"běijīng",m:"Pekin"},
+{h:"本",p:"běn",m:"hisob so‘zi (kitob, o‘simlik)"},
+{h:"不客气",p:"bùkěqi",m:"arzimaydi, iltimos"},
+{h:"不",p:"bù",m:"emas (inkor)"},
+{h:"菜",p:"cài",m:"taom, ovqat"},
+{h:"茶",p:"chá",m:"choy"},
+{h:"吃",p:"chī",m:"yemoq"},
+{h:"出租车",p:"chūzūchē",m:"taksi"},
+{h:"打电话",p:"dǎ diànhuà",m:"telefon qilmoq"},
+{h:"大",p:"dà",m:"katta"},
+{h:"的",p:"de",m:"-ning (tegishlilik)"},
+{h:"点",p:"diǎn",m:"nuqta, ozgina"},
+{h:"电脑",p:"diànnǎo",m:"kompyuter"},
+{h:"电视",p:"diànshì",m:"televizor"},
+{h:"电影",p:"diànyǐng",m:"kino"},
+{h:"东西",p:"dōngxi",m:"narsa"},
+{h:"都",p:"dōu",m:"hammasi"},
+{h:"读",p:"dú",m:"o‘qimoq"},
+{h:"对不起",p:"duìbuqǐ",m:"kechirasiz"},
+{h:"多",p:"duō",m:"ko‘p"},
+{h:"多少",p:"duōshao",m:"qancha?"},
+{h:"儿子",p:"érzi",m:"o‘g‘il"},
+{h:"二",p:"èr",m:"ikki"},
+{h:"饭馆",p:"fànguǎn",m:"restoran"},
+{h:"飞机",p:"fēijī",m:"samolyot"},
+{h:"分钟",p:"fēnzhōng",m:"daqiqa"},
+{h:"高兴",p:"gāoxìng",m:"xursand"},
+{h:"个",p:"gè",m:"hisob so‘zi"},
+{h:"工作",p:"gōngzuò",m:"ish, ishlamoq"},
+{h:"狗",p:"gǒu",m:"it"},
+{h:"汉语",p:"hànyǔ",m:"xitoy tili"},
+{h:"好",p:"hǎo",m:"yaxshi"},
+{h:"喝",p:"hē",m:"ichmoq"},
+{h:"和",p:"hé",m:"va, bilan"},
+{h:"很",p:"hěn",m:"juda"},
+{h:"后面",p:"hòumiàn",m:"orqa tomoni"},
+{h:"回",p:"huí",m:"qaytmoq"},
+{h:"会",p:"huì",m:"bilmoq, qila olmoq"},
+{h:"火车站",p:"huǒchēzhàn",m:"vokzal"},
+{h:"几",p:"jǐ",m:"nechta?"},
+{h:"家",p:"jiā",m:"oila, uy"},
+{h:"叫",p:"jiào",m:"nomlanmoq"},
+{h:"今天",p:"jīntiān",m:"bugun"},
+{h:"九",p:"jiǔ",m:"to‘qqiz"},
+{h:"开",p:"kāi",m:"ochmoq"},
+{h:"看",p:"kàn",m:"qaramoq"},
+{h:"看见",p:"kànjiàn",m:"ko‘rmoq"},
+{h:"块",p:"kuài",m:"pul birligi (yuan)"},
+{h:"来",p:"lái",m:"kelmoq"},
+{h:"老师",p:"lǎoshī",m:"o‘qituvchi"},
+{h:"了",p:"le",m:"harakat tugaganini bildiradi"},
+{h:"冷",p:"lěng",m:"sovuq"},
+{h:"里",p:"lǐ",m:"ichida"},
+{h:"零",p:"líng",m:"nol"},
+{h:"六",p:"liù",m:"olti"},
+{h:"妈妈",p:"māma",m:"ona"},
+{h:"吗",p:"ma",m:"savol qo‘shimchasi"},
+{h:"买",p:"mǎi",m:"sotib olmoq"},
+{h:"猫",p:"māo",m:"mushuk"},
+{h:"没",p:"méi",m:"yo‘q (inkor)"},
+{h:"没关系",p:"méi guānxi",m:"hechqisi yo‘q"},
+{h:"米饭",p:"mǐfàn",m:"guruch"},
+{h:"明天",p:"míngtiān",m:"ertaga"},
+{h:"名字",p:"míngzi",m:"ism"},
+{h:"哪",p:"nǎ",m:"qaysi"},
+{h:"那",p:"nà",m:"u"},
+{h:"呢",p:"ne",m:"savol ohangi"},
+{h:"能",p:"néng",m:"qila olmoq"},
+{h:"你",p:"nǐ",m:"sen"},
+{h:"年",p:"nián",m:"yil"},
+{h:"女儿",p:"nǚ’er",m:"qiz"},
+{h:"朋友",p:"péngyou",m:"do‘st"},
+{h:"漂亮",p:"piàoliang",m:"chiroyli"},
+{h:"苹果",p:"píngguǒ",m:"olma"},
+{h:"七",p:"qī",m:"yetti"},
+{h:"钱",p:"qián",m:"pul"},
+{h:"前面",p:"qiánmian",m:"old tomoni"},
+{h:"请",p:"qǐng",m:"iltimos"},
+{h:"去",p:"qù",m:"bormoq"},
+{h:"热",p:"rè",m:"issiq"},
+{h:"人",p:"rén",m:"odam"},
+{h:"认识",p:"rènshi",m:"tanish bo‘lmoq"},
+{h:"日",p:"rì",m:"kun"},
+{h:"三",p:"sān",m:"uch"},
+{h:"商店",p:"shāngdiàn",m:"do‘kon"},
+{h:"上",p:"shàng",m:"ustida"},
+{h:"上午",p:"shàngwǔ",m:"ertalab"},
+{h:"少",p:"shǎo",m:"kam"},
+{h:"谁",p:"shuí",m:"kim"},
+{h:"什么",p:"shénme",m:"nima"},
+{h:"十",p:"shí",m:"o‘n"},
+{h:"时候",p:"shíhou",m:"vaqt"},
+{h:"是",p:"shì",m:"hisoblanadi"},
+{h:"书",p:"shū",m:"kitob"},
+{h:"水",p:"shuǐ",m:"suv"},
+{h:"水果",p:"shuǐguǒ",m:"meva"},
+{h:"睡觉",p:"shuìjiào",m:"uxlamoq"},
+{h:"说话",p:"shuōhuà",m:"gapirmoq"},
+{h:"四",p:"sì",m:"to‘rt"},
+{h:"岁",p:"suì",m:"yosh"},
+{h:"他",p:"tā",m:"u (erkak)"},
+{h:"她",p:"tā",m:"u (ayol)"},
+{h:"太",p:"tài",m:"juda"},
+{h:"天气",p:"tiānqì",m:"ob-havo"},
+{h:"听",p:"tīng",m:"tinglamoq"},
+{h:"同学",p:"tóngxué",m:"sinfdosh"},
+{h:"喂",p:"wèi",m:"allo"},
+{h:"我",p:"wǒ",m:"men"},
+{h:"我们",p:"wǒmen",m:"biz"},
+{h:"五",p:"wǔ",m:"besh"},
+{h:"喜欢",p:"xǐhuan",m:"yoqtirmoq"},
+{h:"下",p:"xià",m:"past"},
+{h:"下午",p:"xiàwǔ",m:"tushdan keyin"},
+{h:"下雨",p:"xiàyǔ",m:"yomg‘ir yog‘moqda"},
+{h:"先生",p:"xiānsheng",m:"janob"},
+{h:"现在",p:"xiànzài",m:"hozir"},
+{h:"想",p:"xiǎng",m:"xohlamoq"},
+{h:"小",p:"xiǎo",m:"kichik"},
+{h:"小姐",p:"xiǎojie",m:"xonim"},
+{h:"些",p:"xiē",m:"bir oz"},
+{h:"写",p:"xiě",m:"yozmoq"},
+{h:"谢谢",p:"xièxie",m:"rahmat"},
+{h:"星期",p:"xīngqī",m:"hafta"},
+{h:"学生",p:"xuésheng",m:"o‘quvchi"},
+{h:"学习",p:"xuéxí",m:"o‘rganmoq"},
+{h:"学校",p:"xuéxiào",m:"maktab"},
+{h:"一",p:"yī",m:"bir"},
+{h:"衣服",p:"yīfu",m:"kiyim"},
+{h:"医生",p:"yīsheng",m:"shifokor"},
+{h:"医院",p:"yīyuàn",m:"kasalxona"},
+{h:"椅子",p:"yǐzi",m:"stul"},
+{h:"有",p:"yǒu",m:"bor"},
+{h:"月",p:"yuè",m:"oy"},
+{h:"在",p:"zài",m:"da, ichida"},
+{h:"再见",p:"zàijiàn",m:"xayr"},
+{h:"怎么",p:"zěnme",m:"qanday"},
+{h:"怎么样",p:"zěnmeyàng",m:"qanaqa"},
+{h:"这",p:"zhè",m:"bu"},
+{h:"中国",p:"zhōngguó",m:"Xitoy"},
+{h:"中午",p:"zhōngwǔ",m:"tush payti"},
+{h:"住",p:"zhù",m:"yashamoq"},
+{h:"桌子",p:"zhuōzi",m:"stol"},
+{h:"字",p:"zì",m:"ieroglif"},
+{h:"昨天",p:"zuótiān",m:"kecha"},
+{h:"坐",p:"zuò",m:"o‘tirmoq"},
+{h:"做",p:"zuò",m:"qilmoq"}
+];
+
+let index = 0;
+
+function showWord() {
+    document.getElementById("hanzi").innerText = words[index].h;
+    document.getElementById("pinyin").innerText = words[index].p;
+    document.getElementById("meaning").innerText = words[index].m;
+    document.getElementById("meaning").style.display = "none";
+}
+
+function toggleMeaning() {
+    const m = document.getElementById("meaning");
+    m.style.display = m.style.display === "none" ? "block" : "none";
+}
+
+function nextWord() {
+    index = (index + 1) % words.length;
+    showWord();
+}
+
+function prevWord() {
+    index = (index - 1 + words.length) % words.length;
+    showWord();
+}
+
+function randomWord() {
+    index = Math.floor(Math.random() * words.length);
+    showWord();
+}
+
+showWord();
+</script>
+</body>
+</html>
